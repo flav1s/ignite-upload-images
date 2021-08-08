@@ -20,6 +20,9 @@ interface FormParams {
 export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const [imageUrl, setImageUrl] = useState('');
   const [localImageUrl, setLocalImageUrl] = useState('');
+  const imageAcceptedFormatsRegex =
+    /(?:([^:/?#]+):)?(?:([^/?#]*))?([^?#](?:jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?/g;
+
   const toast = useToast();
 
   const formValidations = {
@@ -29,9 +32,8 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         lessThan10MB: fileList =>
           fileList[0].size < 10485760 || 'O arquivo deve ser menor que 10MB',
         acceptedFormats: fileList =>
-          /(?:([^:/?#]+):)?(?:([^/?#]*))?([^?#](?:jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?/g.test(
-            fileList[0].type
-          ) || 'Somente são aceitos arquivos PNG, JPEG e GIF',
+          imageAcceptedFormatsRegex.test(fileList[0].type) ||
+          'Somente são aceitos arquivos PNG, JPEG e GIF',
       },
     },
     title: {
@@ -57,7 +59,10 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const queryClient = useQueryClient();
   const mutation = useMutation(
     async (form: FormParams) => {
-      const data = await api.post<FormParams>('/api/images', form);
+      const data = await api.post<FormParams>('/api/images', {
+        ...form,
+        url: imageUrl,
+      });
       return data;
     },
     {
