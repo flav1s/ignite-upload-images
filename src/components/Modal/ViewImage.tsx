@@ -22,13 +22,13 @@ export function ModalViewImage({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
-        <ModalBody>
+      <ModalContent alignSelf="center" bgColor="pGray.800">
+        <ModalBody p={2}>
           <Image src={imgUrl} />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter justifyContent="start">
           <Link href={imgUrl} target="_blank">
-            Abrir Original
+            Abrir original
           </Link>
         </ModalFooter>
       </ModalContent>
